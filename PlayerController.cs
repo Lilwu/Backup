@@ -19,9 +19,9 @@ public class PlayerController : MonoBehaviour
 
     public Inventory inventory;
 
+    public HUD hud;
+
     public GameObject Hand;
-
-
 
     private void Awake()
     {
@@ -32,8 +32,10 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         inventory.ItemUsed += Inventory_ItemUsed;
+        inventory.ItemUnUsed += Inventory_ItemUnUsed;
     }
 
+    //使用武器
     private void Inventory_ItemUsed(object sender, InventoryEventArgs e)
     {
         print("使用武器");
@@ -45,7 +47,42 @@ public class PlayerController : MonoBehaviour
 
         goItem.transform.parent = Hand.transform;
         goItem.transform.position = Hand.transform.position;
+        goItem.transform.rotation = Hand.transform.rotation;
     }
+
+    //卸除武器
+    private void Inventory_ItemUnUsed(object sender, InventoryEventArgs e)
+    {
+        IInventoryItem item = e.Item;
+        GameObject UnUsedItem = (item as MonoBehaviour).gameObject;
+
+        UnUsedItem.SetActive(false);
+        UnUsedItem.transform.parent = inventory.transform; //卸除後移到inventory裡。
+    }
+
+
+    private IInventoryItem mItemToPickup = null;
+
+    private void OnTriggerEnter(Collider other)
+    {
+        IInventoryItem item = other.GetComponent<IInventoryItem>();
+        if (item != null)
+        {
+            hud.OpenMessagePanel();
+            mItemToPickup = item;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        IInventoryItem item = other.GetComponent<IInventoryItem>();
+        if (item != null)
+        {
+            hud.CloseMessagePanel();
+            mItemToPickup = null;
+        }
+    }
+
 
     void Update()
     {
@@ -69,13 +106,17 @@ public class PlayerController : MonoBehaviour
             _moveDir = transform.TransformDirection(_moveDir);
 
             _moveDir *= speed;
-
-
         }
 
         _moveDir.y -= Gravity * Time.deltaTime;
 
         _characterController.Move(_moveDir * Time.deltaTime);
+
+        if (mItemToPickup != null && Input.GetKeyDown(KeyCode.V))
+        {
+            inventory.AddItem(mItemToPickup);
+            mItemToPickup.OnPickup();
+        }
 
     }
 
