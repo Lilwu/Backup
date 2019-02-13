@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,13 +11,10 @@ public class Player : MonoBehaviour
     static int _hp;
     static int _maxMp;
     static int _mp;
+    static int _lv;
 
-    public Inventory inventory;
     static Player instance;
 
-    //使用武器測試
-    public GameObject Hand;
-    //使用武器測試
 
 
     private void Awake()
@@ -31,6 +29,8 @@ public class Player : MonoBehaviour
 
             _maxMp = 499;
             _mp = _maxMp;
+
+            _lv = 1;
         }
         else if (this != instance)
         {
@@ -39,46 +39,18 @@ public class Player : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-    private void Start()
-    {
-        //使用武器測試
-        inventory.ItemUsed += Inventory_ItemUsed;
-    }
-
-    private void Inventory_ItemUsed(object sender, InventoryEventArgs e)
-    {
-        IInventoryItem item = e.Item;
-
-        //Do some with the object
-        GameObject goItem = (item as MonoBehaviour).gameObject;
-        goItem.SetActive(true);
-
-        goItem.transform.parent = Hand.transform;
-        goItem.transform.position = Hand.transform.position;
-    }
-
-    //使用武器測試
+    //角色觸及物品自動撿起物品
 
     /*
-    private void OnControllerColliderHit(ControllerColliderHit hit)
-    {   
-        IInventoryItem item = hit.collider.GetComponent<IInventoryItem>();
-        if (item != null)
-        {
-            inventory.AddItem(item);
-        }
-    }
-    */
-
-    private void OnCollisionEnter(Collision other)
+private void OnCollisionEnter(Collision other)
+{
+    IInventoryItem item = other.collider.GetComponent<IInventoryItem>();
+    if (item != null)
     {
-        IInventoryItem item = other.collider.GetComponent<IInventoryItem>();
-        if (item != null)
-        {
-            inventory.AddItem(item);
-        }
+        //inventory.AddItem(item);
+
     }
+}    */
 
 
 
@@ -99,10 +71,9 @@ public class Player : MonoBehaviour
     {
         get { return _maxMp; }
     }
-
-
-    private void FixedUpdate()
+    public int LV
     {
-        
+        get { return _lv; }
     }
+
 }
