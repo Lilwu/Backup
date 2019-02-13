@@ -7,6 +7,8 @@ public class HUD : MonoBehaviour
 {
     public Inventory Inventory;
     private bool bagEnabled;
+    public GameObject MessagePanel;
+    public GameObject BagPanel;
 
     private void Awake()
     {
@@ -64,6 +66,17 @@ public class HUD : MonoBehaviour
         }
     }
 
+    //玩家撿起物品
+    public void OpenMessagePanel()
+    {
+        MessagePanel.SetActive(true);
+    }
+
+    public void CloseMessagePanel()
+    {
+        MessagePanel.SetActive(false);
+    }
+
     private void Update()
     {
         if(Input.GetKeyDown(KeyCode.I))
@@ -73,11 +86,11 @@ public class HUD : MonoBehaviour
 
         if( bagEnabled == true)
         {
-            GetComponent<Canvas>().enabled = true;
+            BagPanel.SetActive(true);
         }
         else
         {
-            GetComponent<Canvas>().enabled = false;
+            BagPanel.SetActive(false);
         }
     }
 }
